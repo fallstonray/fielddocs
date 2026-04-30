@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>FieldDocs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:         #0d1a10;
+      --surface:    #142018;
+      --surface2:   #1a2a1f;
+      --border:     #2a3d2f;
+      --accent:     #5bdc7c;
+      --accent-glow:rgba(91,220,124,0.15);
+      --text:       #e4ede6;
+      --muted:      #6a8f72;
+      --danger:     #ff6b6b;
+      --warn:       #f5a623;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    .logo-mark {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    header h1 { font-size: 21px; font-weight: 700; letter-spacing: 0.06em; }
+    header h1 span { color: var(--accent); }
+    .header-sub { margin-left: auto; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* ── LAYOUT ── */
+    .form-wrap { max-width: 600px; margin: 0 auto; padding: 18px 14px; }
+
+    /* ── SECTION CARD ── */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 16px;
+      margin-bottom: 14px;
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── FIELDS ── */
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    select, input[type="text"], textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      padding: 11px 13px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance: none;
+    }
+    select:focus, input[type="text"]:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235bdc7c' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 13px center;
+      padding-right: 36px;
+    }
+    input[readonly] { color: var(--muted); cursor: default; }
+    textarea { resize: vertical; min-height: 76px; line-height: 1.5; }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0;
+      cursor: pointer; width: 100%; height: 100%;
+      border: none; padding: 0; background: none;
+    }
+    .upload-icon { font-size: 34px; margin-bottom: 8px; display: block; }
+    .upload-zone strong {
+      display: block;
+      color: var(--accent);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 3px;
+    }
+    .upload-zone p { color: var(--muted); font-size: 13px; }
+
+    /* ── PHOTO COUNT BADGE ── */
+    .badge {
+      display: none;
+      background: var(--accent);
+      color: #0d1a10;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 1px 8px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── PHOTO CARDS ── */
+    .photo-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+
+    .photo-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      animation: slidein 0.18s ease;
+    }
+    @keyframes slidein {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .photo-thumb {
+      width: 58px; height: 58px;
+      border-radius: 7px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .photo-meta { flex: 1; min-width: 0; }
+    .photo-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 7px;
+    }
+    .photo-card select { font-size: 13px; padding: 7px 32px 7px 10px; }
+    .photo-remove {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 14px;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .photo-remove:hover { color: var(--danger); border-color: var(--danger); }
+    .photo-status { font-size: 11px; margin-top: 5px; color: var(--muted); }
+    .photo-status.uploading { color: var(--warn); }
+    .photo-status.done      { color: var(--accent); }
+    .photo-status.error     { color: var(--danger); }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 6px;
+      transition: width 0.3s ease;
+      width: 0%;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+    .progress-label {
+      display: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #0d1a10;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.18s;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .btn-submit:hover:not(:disabled) { background: #72e993; }
+    .btn-submit:active:not(:disabled) { transform: scale(0.98); }
+    .btn-submit:disabled {
+      background: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ── SUCCESS BANNER ── */
+    .success-banner {
+      display: none;
+      background: var(--accent-glow);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">📋</div>
+  <h1>Field<span>Docs</span></h1>
+  <div class="header-sub" id="headerDate"></div>
+</header>
+
+<div class="form-wrap">
+
+  <!-- JOB INFO -->
+  <div class="section">
+    <div class="section-label">Job Info</div>
+
+    <div class="field">
+      <label>Project</label>
+      <select id="projectName">
+        <option value="">— Select Project —</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Crew Member</label>
+      <select id="crewMember">
+        <option value="">— Select Crew Member —</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Date</label>
+      <input type="text" id="dateField" readonly>
+    </div>
+  </div>
+
+  <!-- PHOTOS -->
+  <div class="section">
+    <div class="section-label">
+      Photos <span class="badge" id="photoBadge"></span>
+    </div>
+
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="photoInput" accept="image/*" multiple capture="environment">
+      <span class="upload-icon">📷</span>
+      <strong>Tap to Select Photos</strong>
+      <p>Pick multiple from camera roll — assign categories below</p>
+    </div>
+
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="section">
+    <div class="section-label">Notes</div>
+    <textarea id="notes" placeholder="Optional — observations, issues, materials used..."></textarea>
+  </div>
+
+  <!-- SUBMIT -->
+  <div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="success-banner" id="successBanner"></div>
+    <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+      Upload to Drive
+    </button>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+// Paste your deployed Apps Script URL here after setup
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwr-Eilpi6dB0pBFtrK7DyjwaDNKaefg-SqS8WXzcj7Jy91iX-X4wYHqbwXUFpMkx2/exec';
+
+const CATEGORIES = [
+  { value: 'Before',     label: '01 – Before'     },
+  { value: 'Layout',     label: '02 – Layout'     },
+  { value: 'Install',    label: '03 – Install'    },
+  { value: 'Irrigation', label: '04 – Irrigation' },
+  { value: 'Issues',     label: '05 – Issues'     },
+  { value: 'Final',      label: '06 – Final'      },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let photos = [];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  const now = new Date();
+  document.getElementById('dateField').value = now.toLocaleDateString('en-US', {
+    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+  });
+  document.getElementById('headerDate').textContent = now.toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric'
+  });
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL);
+    const data = await res.json();
+    populateSelect('projectName', data.projects);
+    populateSelect('crewMember', data.crew);
+  } catch {
+    // Fallback data — also managed via the "Projects" and "Crew" tabs in your Sheet
+    populateSelect('projectName', [
+      'Raising Canes Owings Mills, MD',
+      'CFA Fountain of Miramar, FL',
+    ]);
+    populateSelect('crewMember', ['Nick', 'Tino', 'James']);
+  }
+});
+
+function populateSelect(id, items) {
+  const sel = document.getElementById(id);
+  items.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    sel.appendChild(opt);
+  });
+}
+
+// ─── PHOTO HANDLING ───────────────────────────────────────────────────────────
+document.getElementById('photoInput').addEventListener('change', e => {
+  Array.from(e.target.files).forEach(file => {
+    photos.push({
+      file,
+      objectUrl: URL.createObjectURL(file),
+      category: 'Before',
+      uid: Date.now() + '-' + Math.random().toString(36).slice(2)
+    });
+  });
+  renderGrid();
+  e.target.value = '';
+});
+
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).forEach(file => {
+    photos.push({ file, objectUrl: URL.createObjectURL(file), category: 'Before', uid: Date.now() + '-' + Math.random().toString(36).slice(2) });
+  });
+  renderGrid();
+});
+
+function renderGrid() {
+  const grid  = document.getElementById('photoGrid');
+  const badge = document.getElementById('photoBadge');
+  grid.innerHTML = '';
+  if (!photos.length) { badge.style.display = 'none'; return; }
+
+  badge.style.display = 'inline-block';
+  badge.textContent = photos.length + (photos.length === 1 ? ' photo' : ' photos');
+
+  photos.forEach((p, i) => {
+    const opts = CATEGORIES.map(c =>
+      `<option value="${c.value}"${c.value === p.category ? ' selected' : ''}>${c.label}</option>`
+    ).join('');
+
+    const card = document.createElement('div');
+    card.className = 'photo-card';
+    card.id = 'card-' + p.uid;
+    card.innerHTML = `
+      <img class="photo-thumb" src="${p.objectUrl}" alt="">
+      <div class="photo-meta">
+        <div class="photo-name">${p.file.name}</div>
+        <select onchange="photos[${i}].category=this.value">${opts}</select>
+        <div class="photo-status" id="st-${p.uid}"></div>
+      </div>
+      <button class="photo-remove" onclick="removePhoto(${i})" title="Remove">✕</button>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function removePhoto(i) {
+  URL.revokeObjectURL(photos[i].objectUrl);
+  photos.splice(i, 1);
+  renderGrid();
+}
+
+// ─── SUBMIT ───────────────────────────────────────────────────────────────────
+async function handleSubmit() {
+  const project = document.getElementById('projectName').value;
+  const crew    = document.getElementById('crewMember').value;
+  const notes   = document.getElementById('notes').value;
+
+  if (!project)        { alert('Please select a project.');     return; }
+  if (!crew)           { alert('Please select a crew member.'); return; }
+  if (!photos.length)  { alert('Please add at least one photo.'); return; }
+
+  const btn           = document.getElementById('submitBtn');
+  const progressWrap  = document.getElementById('progressWrap');
+  const progressFill  = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  const successBanner = document.getElementById('successBanner');
+
+  btn.disabled = true;
+  btn.textContent = 'Uploading…';
+  progressWrap.style.display  = 'block';
+  progressLabel.style.display = 'block';
+  successBanner.style.display = 'none';
+
+  let uploaded = 0, errors = 0;
+
+  for (let i = 0; i < photos.length; i++) {
+    const p = photos[i];
+    const st = document.getElementById('st-' + p.uid);
+    if (st) { st.className = 'photo-status uploading'; st.textContent = 'Uploading…'; }
+
+    progressLabel.textContent = `Photo ${i + 1} of ${photos.length}`;
+    progressFill.style.width  = ((i / photos.length) * 100) + '%';
+
+    try {
+      const base64 = await toBase64(p.file);
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          projectName: project,
+          crewMember:  crew,
+          category:    p.category,
+          notes:       notes,
+          fileName:    p.file.name,
+          mimeType:    p.file.type,
+          photoData:   base64,
+          date:        new Date().toISOString()
+        })
+      });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || 'Upload failed');
+      uploaded++;
+      if (st) { st.className = 'photo-status done'; st.textContent = '✓ Uploaded'; }
+    } catch (err) {
+      errors++;
+      if (st) { st.className = 'photo-status error'; st.textContent = '✗ Failed — ' + err.message; }
+    }
+  }
+
+  progressFill.style.width = '100%';
+
+  if (errors === 0) {
+    progressWrap.style.display  = 'none';
+    progressLabel.style.display = 'none';
+    successBanner.textContent   = `✅ ${uploaded} photo${uploaded > 1 ? 's' : ''} uploaded to Drive!`;
+    successBanner.style.display = 'block';
+    btn.textContent = 'Upload to Drive';
+
+    setTimeout(() => {
+      photos.forEach(p => URL.revokeObjectURL(p.objectUrl));
+      photos = [];
+      renderGrid();
+      document.getElementById('notes').value = '';
+      successBanner.style.display = 'none';
+      progressFill.style.width = '0%';
+      btn.disabled = false;
+    }, 3000);
+  } else {
+    progressLabel.textContent  = `${uploaded} uploaded · ${errors} failed — see red items above`;
+    btn.textContent = 'Retry Failed';
+    btn.disabled = false;
+  }
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload  = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+</script>
+</body>
+</html>
