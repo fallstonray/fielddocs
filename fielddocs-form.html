@@ -11,16 +11,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:         #0d1a10;
-      --surface:    #142018;
-      --surface2:   #1a2a1f;
-      --border:     #2a3d2f;
-      --accent:     #5bdc7c;
-      --accent-glow:rgba(91,220,124,0.15);
-      --text:       #e4ede6;
-      --muted:      #6a8f72;
-      --danger:     #ff6b6b;
-      --warn:       #f5a623;
+      --bg:          #0d1a10;
+      --surface:     #142018;
+      --surface2:    #1a2a1f;
+      --border:      #2a3d2f;
+      --accent:      #5bdc7c;
+      --accent-glow: rgba(91,220,124,0.15);
+      --text:        #e4ede6;
+      --muted:       #6a8f72;
+      --danger:      #ff6b6b;
+      --warn:        #f5a623;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +30,7 @@
       color: var(--text);
       font-family: 'Barlow Condensed', sans-serif;
       min-height: 100vh;
-      padding-bottom: 60px;
+      padding-bottom: 80px;
     }
 
     /* ── HEADER ── */
@@ -44,7 +44,6 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(8px);
     }
     .logo-mark {
       width: 34px; height: 34px;
@@ -59,7 +58,7 @@
     .header-sub { margin-left: auto; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
 
     /* ── LAYOUT ── */
-    .form-wrap { max-width: 600px; margin: 0 auto; padding: 18px 14px; }
+    .form-wrap { max-width: 600px; margin: 0 auto; padding: 16px 14px; }
 
     /* ── SECTION CARD ── */
     .section {
@@ -80,12 +79,7 @@
       align-items: center;
       gap: 8px;
     }
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
     /* ── FIELDS ── */
     .field { margin-bottom: 12px; }
@@ -127,169 +121,220 @@
     input[readonly] { color: var(--muted); cursor: default; }
     textarea { resize: vertical; min-height: 76px; line-height: 1.5; }
 
-    /* ── UPLOAD ZONE ── */
-    .upload-zone {
+    /* ── PICK BUTTON ── */
+    .btn-pick {
+      width: 100%;
+      background: var(--surface2);
       border: 2px dashed var(--border);
       border-radius: 12px;
-      padding: 28px 16px;
-      text-align: center;
+      color: var(--accent);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 22px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
       position: relative;
-      overflow: hidden;
     }
-    .upload-zone:hover, .upload-zone.drag-over {
-      border-color: var(--accent);
-      background: var(--accent-glow);
-    }
-    .upload-zone input[type="file"] {
+    .btn-pick:hover { border-color: var(--accent); background: var(--accent-glow); }
+    .btn-pick input[type="file"] {
       position: absolute; inset: 0; opacity: 0;
       cursor: pointer; width: 100%; height: 100%;
-      border: none; padding: 0; background: none;
     }
-    .upload-icon { font-size: 34px; margin-bottom: 8px; display: block; }
-    .upload-zone strong {
-      display: block;
-      color: var(--accent);
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      margin-bottom: 3px;
-    }
-    .upload-zone p { color: var(--muted); font-size: 13px; }
 
-    /* ── PHOTO COUNT BADGE ── */
-    .badge {
+    /* ── COUNTER BAR ── */
+    .counter-bar {
       display: none;
-      background: var(--accent);
-      color: #0d1a10;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 20px;
-      padding: 1px 8px;
-      margin-left: 8px;
-      vertical-align: middle;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
     }
+    .counter-bar.visible { display: flex; }
+    .counter-text { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+    .counter-text strong { color: var(--accent); }
+    .counter-text.at-max strong { color: var(--warn); }
+    .btn-clear-all {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-clear-all:hover { color: var(--danger); border-color: var(--danger); }
+
+    /* ── THUMB STRIP (5 across) ── */
+    .thumb-strip {
+      display: none;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .thumb-strip.visible { display: grid; }
+    .thumb-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      animation: popin 0.15s ease;
+    }
+    @keyframes popin {
+      from { opacity: 0; transform: scale(0.88); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb-num {
+      position: absolute; top: 3px; left: 3px;
+      background: rgba(0,0,0,0.65); color: #fff;
+      font-family: 'DM Mono', monospace; font-size: 9px;
+      border-radius: 4px; padding: 1px 4px;
+    }
+    .thumb-cat {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(13,26,16,0.82); color: var(--accent);
+      font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+      text-align: center; padding: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .thumb-remove {
+      position: absolute; top: 3px; right: 3px;
+      background: rgba(255,107,107,0.9); border: none;
+      border-radius: 50%; width: 16px; height: 16px;
+      color: #fff; font-size: 9px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── ASSIGN SECTION ── */
+    .assign-divider {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0 10px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .assign-divider.visible { display: flex; }
+    .assign-divider::before, .assign-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── BATCH ROW ── */
+    .batch-row {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .batch-row.visible { display: flex; }
+    .batch-row label { margin: 0; font-size: 10px; white-space: nowrap; flex-shrink: 0; }
+    .batch-row select { flex: 1; font-size: 13px; padding: 7px 32px 7px 10px; }
+    .btn-apply-all {
+      background: var(--accent); color: #0d1a10;
+      border: none; border-radius: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+      padding: 8px 12px; cursor: pointer; white-space: nowrap;
+      transition: background 0.15s; flex-shrink: 0;
+    }
+    .btn-apply-all:hover { background: #72e993; }
 
     /* ── PHOTO CARDS ── */
-    .photo-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-
+    .photo-list { display: flex; flex-direction: column; gap: 8px; }
     .photo-card {
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      display: flex; align-items: center; gap: 10px;
       padding: 8px 10px;
-      animation: slidein 0.18s ease;
+      animation: slidein 0.15s ease;
     }
     @keyframes slidein {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(5px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .photo-thumb {
-      width: 58px; height: 58px;
-      border-radius: 7px;
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 1px solid var(--border);
+    .card-num {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); flex-shrink: 0; width: 18px; text-align: center;
     }
-    .photo-meta { flex: 1; min-width: 0; }
-    .photo-name {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 7px;
+    .card-thumb {
+      width: 52px; height: 52px; border-radius: 6px;
+      object-fit: cover; flex-shrink: 0; border: 1px solid var(--border);
     }
-    .photo-card select { font-size: 13px; padding: 7px 32px 7px 10px; }
-    .photo-remove {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      cursor: pointer;
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 14px;
-      flex-shrink: 0;
-      transition: all 0.15s;
-      line-height: 1;
+    .card-meta { flex: 1; min-width: 0; }
+    .card-name {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      color: var(--muted); white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;
     }
-    .photo-remove:hover { color: var(--danger); border-color: var(--danger); }
-    .photo-status { font-size: 11px; margin-top: 5px; color: var(--muted); }
-    .photo-status.uploading { color: var(--warn); }
-    .photo-status.done      { color: var(--accent); }
-    .photo-status.error     { color: var(--danger); }
+    .card-select { font-size: 13px; padding: 7px 32px 7px 10px; }
+    .card-remove {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer;
+      padding: 6px 8px; border-radius: 6px; font-size: 13px;
+      flex-shrink: 0; transition: all 0.15s; line-height: 1;
+    }
+    .card-remove:hover { color: var(--danger); border-color: var(--danger); }
+    .card-status { font-size: 10px; margin-top: 4px; }
+    .card-status.uploading { color: var(--warn); }
+    .card-status.done      { color: var(--accent); }
+    .card-status.error     { color: var(--danger); }
 
     /* ── PROGRESS ── */
     .progress-wrap {
-      display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      height: 6px;
-      overflow: hidden;
-      margin-bottom: 10px;
+      display: none; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 6px;
+      height: 6px; overflow: hidden; margin-bottom: 8px;
     }
     .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 6px;
-      transition: width 0.3s ease;
-      width: 0%;
+      height: 100%; background: var(--accent); border-radius: 6px;
+      transition: width 0.3s ease; width: 0%;
       box-shadow: 0 0 8px var(--accent-glow);
     }
     .progress-label {
-      display: none;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      margin-bottom: 10px;
+      display: none; font-family: 'DM Mono', monospace;
+      font-size: 12px; color: var(--muted);
+      text-align: center; margin-bottom: 8px;
     }
 
-    /* ── SUBMIT BUTTON ── */
+    /* ── SUBMIT ── */
     .btn-submit {
-      width: 100%;
-      background: var(--accent);
-      color: #0d1a10;
-      border: none;
-      border-radius: 10px;
+      width: 100%; background: var(--accent); color: #0d1a10;
+      border: none; border-radius: 10px;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 15px;
-      cursor: pointer;
-      transition: all 0.18s;
-      box-shadow: 0 4px 20px var(--accent-glow);
+      font-size: 20px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 15px; cursor: pointer;
+      transition: all 0.18s; box-shadow: 0 4px 20px var(--accent-glow);
     }
     .btn-submit:hover:not(:disabled) { background: #72e993; }
     .btn-submit:active:not(:disabled) { transform: scale(0.98); }
-    .btn-submit:disabled {
-      background: var(--border);
-      color: var(--muted);
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+    .btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; box-shadow: none; }
 
-    /* ── SUCCESS BANNER ── */
+    /* ── SUCCESS ── */
     .success-banner {
-      display: none;
-      background: var(--accent-glow);
-      border: 1px solid var(--accent);
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-      color: var(--accent);
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      margin-bottom: 12px;
+      display: none; background: var(--accent-glow);
+      border: 1px solid var(--accent); border-radius: 10px;
+      padding: 15px; text-align: center;
+      color: var(--accent); font-size: 18px; font-weight: 700;
+      letter-spacing: 0.06em; margin-bottom: 12px;
     }
   </style>
 </head>
@@ -306,21 +351,14 @@
   <!-- JOB INFO -->
   <div class="section">
     <div class="section-label">Job Info</div>
-
     <div class="field">
       <label>Project</label>
-      <select id="projectName">
-        <option value="">— Select Project —</option>
-      </select>
+      <select id="projectName"><option value="">— Select Project —</option></select>
     </div>
-
     <div class="field">
       <label>Crew Member</label>
-      <select id="crewMember">
-        <option value="">— Select Crew Member —</option>
-      </select>
+      <select id="crewMember"><option value="">— Select Crew Member —</option></select>
     </div>
-
     <div class="field">
       <label>Date</label>
       <input type="text" id="dateField" readonly>
@@ -329,18 +367,34 @@
 
   <!-- PHOTOS -->
   <div class="section">
-    <div class="section-label">
-      Photos <span class="badge" id="photoBadge"></span>
+    <div class="section-label">Photos</div>
+
+    <!-- Step 1: Pick -->
+    <div class="btn-pick">
+      <input type="file" id="photoInput" accept="image/*" multiple>
+      <span>🖼️</span>
+      <span>Select Photos from Camera Roll</span>
     </div>
 
-    <div class="upload-zone" id="uploadZone">
-      <input type="file" id="photoInput" accept="image/*" multiple">
-      <span class="upload-icon">📷</span>
-      <strong>Tap to Select Photos</strong>
-      <p>Pick multiple from camera roll — assign categories below</p>
+    <!-- Counter -->
+    <div class="counter-bar" id="counterBar">
+      <span class="counter-text" id="counterText"></span>
+      <button class="btn-clear-all" onclick="clearAll()">Clear All</button>
     </div>
 
-    <div class="photo-grid" id="photoGrid"></div>
+    <!-- Step 2: Thumbnail preview grid -->
+    <div class="thumb-strip" id="thumbStrip"></div>
+
+    <!-- Step 3: Assign categories -->
+    <div class="assign-divider" id="assignDivider">Assign Categories</div>
+
+    <div class="batch-row" id="batchRow">
+      <label>Apply to all:</label>
+      <select id="batchCategory"><option value="">— Category —</option></select>
+      <button class="btn-apply-all" onclick="applyToAll()">Apply All</button>
+    </div>
+
+    <div class="photo-list" id="photoList"></div>
   </div>
 
   <!-- NOTES -->
@@ -356,17 +410,14 @@
     </div>
     <div class="progress-label" id="progressLabel"></div>
     <div class="success-banner" id="successBanner"></div>
-    <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
-      Upload to Drive
-    </button>
+    <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">Upload to Drive</button>
   </div>
 
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-// Paste your deployed Apps Script URL here after setup
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwr-Eilpi6dB0pBFtrK7DyjwaDNKaefg-SqS8WXzcj7Jy91iX-X4wYHqbwXUFpMkx2/exec';
+const MAX_PHOTOS = 10;
 
 const CATEGORIES = [
   { value: 'Before',     label: '01 – Before'     },
@@ -377,10 +428,9 @@ const CATEGORIES = [
   { value: 'Final',      label: '06 – Final'      },
 ];
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
 let photos = [];
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   const now = new Date();
   document.getElementById('dateField').value = now.toLocaleDateString('en-US', {
@@ -390,102 +440,169 @@ document.addEventListener('DOMContentLoaded', async () => {
     month: 'short', day: 'numeric', year: 'numeric'
   });
 
+  // Populate batch category select
+  const bsel = document.getElementById('batchCategory');
+  CATEGORIES.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.value; o.textContent = c.label; bsel.appendChild(o);
+  });
+
+  // Load dropdowns from Sheet
   try {
-    const res = await fetch(APPS_SCRIPT_URL);
+    const res  = await fetch(APPS_SCRIPT_URL);
     const data = await res.json();
     populateSelect('projectName', data.projects);
-    populateSelect('crewMember', data.crew);
+    populateSelect('crewMember',  data.crew);
   } catch {
-    // Fallback data — also managed via the "Projects" and "Crew" tabs in your Sheet
     populateSelect('projectName', [
       'Raising Canes Owings Mills, MD',
       'CFA Fountain of Miramar, FL',
+      'Ball Diamond Dundalk Rec Center',
     ]);
-    populateSelect('crewMember', ['Nick', 'Tino', 'James']);
+    populateSelect('crewMember', ['Nick', 'Tino', 'James', 'Jamie', 'Rich', 'Ray', 'Belkis']);
   }
 });
 
 function populateSelect(id, items) {
   const sel = document.getElementById(id);
   items.forEach(item => {
-    const opt = document.createElement('option');
-    opt.value = item;
-    opt.textContent = item;
-    sel.appendChild(opt);
+    const o = document.createElement('option');
+    o.value = item; o.textContent = item; sel.appendChild(o);
   });
 }
 
-// ─── PHOTO HANDLING ───────────────────────────────────────────────────────────
+// ── PHOTO INPUT ───────────────────────────────────────────────────────────────
 document.getElementById('photoInput').addEventListener('change', e => {
-  Array.from(e.target.files).forEach(file => {
-    photos.push({
-      file,
-      objectUrl: URL.createObjectURL(file),
-      category: 'Before',
-      uid: Date.now() + '-' + Math.random().toString(36).slice(2)
-    });
-  });
-  renderGrid();
+  const incoming = Array.from(e.target.files);
+  const slots    = MAX_PHOTOS - photos.length;
+
+  if (slots <= 0) {
+    alert(`Maximum of ${MAX_PHOTOS} photos per submission reached.`);
+    e.target.value = ''; return;
+  }
+
+  const toAdd = incoming.slice(0, slots);
+  if (incoming.length > slots)
+    alert(`Only ${slots} slot${slots === 1 ? '' : 's'} remaining — adding first ${slots} of ${incoming.length} selected.`);
+
+  toAdd.forEach(file => photos.push({
+    file,
+    objectUrl: URL.createObjectURL(file),
+    category: 'Before',
+    uid: Date.now() + '-' + Math.random().toString(36).slice(2)
+  }));
+
+  render();
   e.target.value = '';
 });
 
-const uploadZone = document.getElementById('uploadZone');
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadZone.classList.remove('drag-over');
-  Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).forEach(file => {
-    photos.push({ file, objectUrl: URL.createObjectURL(file), category: 'Before', uid: Date.now() + '-' + Math.random().toString(36).slice(2) });
-  });
-  renderGrid();
-});
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  // Counter bar
+  const bar  = document.getElementById('counterBar');
+  const text = document.getElementById('counterText');
+  if (photos.length) {
+    bar.classList.add('visible');
+    const atMax = photos.length >= MAX_PHOTOS;
+    text.className = 'counter-text' + (atMax ? ' at-max' : '');
+    text.innerHTML = `<strong>${photos.length} / ${MAX_PHOTOS}</strong> photos selected${atMax ? ' — limit reached' : ''}`;
+  } else {
+    bar.classList.remove('visible');
+  }
 
-function renderGrid() {
-  const grid  = document.getElementById('photoGrid');
-  const badge = document.getElementById('photoBadge');
-  grid.innerHTML = '';
-  if (!photos.length) { badge.style.display = 'none'; return; }
+  // Thumbnail strip
+  const strip = document.getElementById('thumbStrip');
+  strip.innerHTML = '';
+  if (photos.length) {
+    strip.classList.add('visible');
+    photos.forEach((p, i) => {
+      const el = document.createElement('div');
+      el.className = 'thumb-item';
+      el.innerHTML = `
+        <img src="${p.objectUrl}" alt="">
+        <span class="thumb-num">${i + 1}</span>
+        <span class="thumb-cat" id="tcat-${p.uid}">${p.category}</span>
+        <button class="thumb-remove" onclick="removePhoto(${i})">✕</button>
+      `;
+      strip.appendChild(el);
+    });
+  } else {
+    strip.classList.remove('visible');
+  }
 
-  badge.style.display = 'inline-block';
-  badge.textContent = photos.length + (photos.length === 1 ? ' photo' : ' photos');
+  // Assign section
+  const divider  = document.getElementById('assignDivider');
+  const batchRow = document.getElementById('batchRow');
+  const list     = document.getElementById('photoList');
+  list.innerHTML = '';
 
-  photos.forEach((p, i) => {
-    const opts = CATEGORIES.map(c =>
-      `<option value="${c.value}"${c.value === p.category ? ' selected' : ''}>${c.label}</option>`
-    ).join('');
+  if (photos.length) {
+    divider.classList.add('visible');
+    batchRow.classList.add('visible');
 
-    const card = document.createElement('div');
-    card.className = 'photo-card';
-    card.id = 'card-' + p.uid;
-    card.innerHTML = `
-      <img class="photo-thumb" src="${p.objectUrl}" alt="">
-      <div class="photo-meta">
-        <div class="photo-name">${p.file.name}</div>
-        <select onchange="photos[${i}].category=this.value">${opts}</select>
-        <div class="photo-status" id="st-${p.uid}"></div>
-      </div>
-      <button class="photo-remove" onclick="removePhoto(${i})" title="Remove">✕</button>
-    `;
-    grid.appendChild(card);
-  });
+    photos.forEach((p, i) => {
+      const opts = CATEGORIES.map(c =>
+        `<option value="${c.value}"${c.value === p.category ? ' selected' : ''}>${c.label}</option>`
+      ).join('');
+
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.id = 'card-' + p.uid;
+      card.innerHTML = `
+        <span class="card-num">${i + 1}</span>
+        <img class="card-thumb" src="${p.objectUrl}" alt="">
+        <div class="card-meta">
+          <div class="card-name">${p.file.name}</div>
+          <select class="card-select" onchange="setCategory(${i}, this.value)">${opts}</select>
+          <div class="card-status" id="st-${p.uid}"></div>
+        </div>
+        <button class="card-remove" onclick="removePhoto(${i})">✕</button>
+      `;
+      list.appendChild(card);
+    });
+  } else {
+    divider.classList.remove('visible');
+    batchRow.classList.remove('visible');
+  }
+}
+
+function setCategory(i, val) {
+  photos[i].category = val;
+  // Sync thumbnail label
+  const tcat = document.getElementById('tcat-' + photos[i].uid);
+  if (tcat) tcat.textContent = val;
 }
 
 function removePhoto(i) {
   URL.revokeObjectURL(photos[i].objectUrl);
   photos.splice(i, 1);
-  renderGrid();
+  render();
 }
 
-// ─── SUBMIT ───────────────────────────────────────────────────────────────────
+function clearAll() {
+  if (!photos.length) return;
+  if (!confirm(`Remove all ${photos.length} photos and start over?`)) return;
+  photos.forEach(p => URL.revokeObjectURL(p.objectUrl));
+  photos = [];
+  render();
+}
+
+function applyToAll() {
+  const val = document.getElementById('batchCategory').value;
+  if (!val) { alert('Select a category first.'); return; }
+  photos.forEach(p => p.category = val);
+  render();
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
 async function handleSubmit() {
   const project = document.getElementById('projectName').value;
   const crew    = document.getElementById('crewMember').value;
   const notes   = document.getElementById('notes').value;
 
-  if (!project)        { alert('Please select a project.');     return; }
-  if (!crew)           { alert('Please select a crew member.'); return; }
-  if (!photos.length)  { alert('Please add at least one photo.'); return; }
+  if (!project)       { alert('Please select a project.');       return; }
+  if (!crew)          { alert('Please select a crew member.');   return; }
+  if (!photos.length) { alert('Please add at least one photo.'); return; }
 
   const btn           = document.getElementById('submitBtn');
   const progressWrap  = document.getElementById('progressWrap');
@@ -502,11 +619,10 @@ async function handleSubmit() {
   let uploaded = 0, errors = 0;
 
   for (let i = 0; i < photos.length; i++) {
-    const p = photos[i];
+    const p  = photos[i];
     const st = document.getElementById('st-' + p.uid);
-    if (st) { st.className = 'photo-status uploading'; st.textContent = 'Uploading…'; }
-
-    progressLabel.textContent = `Photo ${i + 1} of ${photos.length}`;
+    if (st) { st.className = 'card-status uploading'; st.textContent = 'Uploading…'; }
+    progressLabel.textContent = `Uploading ${i + 1} of ${photos.length}…`;
     progressFill.style.width  = ((i / photos.length) * 100) + '%';
 
     try {
@@ -517,7 +633,7 @@ async function handleSubmit() {
           projectName: project,
           crewMember:  crew,
           category:    p.category,
-          notes:       notes,
+          notes,
           fileName:    p.file.name,
           mimeType:    p.file.type,
           photoData:   base64,
@@ -527,10 +643,10 @@ async function handleSubmit() {
       const result = await res.json();
       if (!result.success) throw new Error(result.error || 'Upload failed');
       uploaded++;
-      if (st) { st.className = 'photo-status done'; st.textContent = '✓ Uploaded'; }
+      if (st) { st.className = 'card-status done'; st.textContent = '✓ In Drive'; }
     } catch (err) {
       errors++;
-      if (st) { st.className = 'photo-status error'; st.textContent = '✗ Failed — ' + err.message; }
+      if (st) { st.className = 'card-status error'; st.textContent = '✗ ' + err.message; }
     }
   }
 
@@ -539,21 +655,20 @@ async function handleSubmit() {
   if (errors === 0) {
     progressWrap.style.display  = 'none';
     progressLabel.style.display = 'none';
-    successBanner.textContent   = `✅ ${uploaded} photo${uploaded > 1 ? 's' : ''} uploaded to Drive!`;
+    successBanner.innerHTML     = `✅ ${uploaded} photo${uploaded > 1 ? 's' : ''} uploaded to Drive!`;
     successBanner.style.display = 'block';
     btn.textContent = 'Upload to Drive';
-
     setTimeout(() => {
       photos.forEach(p => URL.revokeObjectURL(p.objectUrl));
       photos = [];
-      renderGrid();
+      render();
       document.getElementById('notes').value = '';
       successBanner.style.display = 'none';
-      progressFill.style.width = '0%';
+      progressFill.style.width    = '0%';
       btn.disabled = false;
     }, 3000);
   } else {
-    progressLabel.textContent  = `${uploaded} uploaded · ${errors} failed — see red items above`;
+    progressLabel.textContent = `${uploaded} uploaded · ${errors} failed — see red items above`;
     btn.textContent = 'Retry Failed';
     btn.disabled = false;
   }
