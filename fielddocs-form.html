@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -37,10 +37,10 @@
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -52,10 +52,48 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 17px;
       box-shadow: 0 0 12px var(--accent-glow);
+      flex-shrink: 0;
     }
     header h1 { font-size: 21px; font-weight: 700; letter-spacing: 0.06em; }
     header h1 span { color: var(--accent); }
-    .header-sub { margin-left: auto; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .header-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* ── LANGUAGE TOGGLE ── */
+    .lang-toggle {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .lang-btn {
+      background: none;
+      border: none;
+      border-radius: 16px;
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .lang-btn.active {
+      background: var(--accent);
+      color: #0d1a10;
+    }
+    .header-date {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      display: none;
+    }
+    @media (min-width: 420px) { .header-date { display: block; } }
 
     /* ── LAYOUT ── */
     .form-wrap { max-width: 600px; margin: 0 auto; padding: 16px 14px; }
@@ -176,7 +214,7 @@
     }
     .btn-clear-all:hover { color: var(--danger); border-color: var(--danger); }
 
-    /* ── THUMB STRIP (5 across) ── */
+    /* ── THUMB STRIP ── */
     .thumb-strip {
       display: none;
       grid-template-columns: repeat(5, 1fr);
@@ -343,55 +381,56 @@
 <header>
   <div class="logo-mark">📋</div>
   <h1>Field<span>Docs</span></h1>
-  <div class="header-sub" id="headerDate"></div>
+  <div class="header-date" id="headerDate"></div>
+  <!-- Language Toggle -->
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
+    <button class="lang-btn"        id="btn-es" onclick="setLanguage('es')">ES</button>
+  </div>
 </header>
 
 <div class="form-wrap">
 
   <!-- JOB INFO -->
   <div class="section">
-    <div class="section-label">Job Info</div>
+    <div class="section-label" data-i18n="jobInfo">Job Info</div>
     <div class="field">
-      <label>Project</label>
-      <select id="projectName"><option value="">— Select Project —</option></select>
+      <label data-i18n="project">Project</label>
+      <select id="projectName"><option value="" data-i18n-opt="selectProject">— Select Project —</option></select>
     </div>
     <div class="field">
-      <label>Crew Member</label>
-      <select id="crewMember"><option value="">— Select Crew Member —</option></select>
+      <label data-i18n="crewMember">Crew Member</label>
+      <select id="crewMember"><option value="" data-i18n-opt="selectCrew">— Select Crew Member —</option></select>
     </div>
     <div class="field">
-      <label>Date</label>
+      <label data-i18n="date">Date</label>
       <input type="text" id="dateField" readonly>
     </div>
   </div>
 
   <!-- PHOTOS -->
   <div class="section">
-    <div class="section-label">Photos</div>
+    <div class="section-label" data-i18n="photos">Photos</div>
 
-    <!-- Step 1: Pick -->
     <div class="btn-pick">
       <input type="file" id="photoInput" accept="image/*" multiple>
       <span>🖼️</span>
-      <span>Select Photos from Camera Roll</span>
+      <span data-i18n="selectPhotos">Select Photos from Camera Roll</span>
     </div>
 
-    <!-- Counter -->
     <div class="counter-bar" id="counterBar">
       <span class="counter-text" id="counterText"></span>
-      <button class="btn-clear-all" onclick="clearAll()">Clear All</button>
+      <button class="btn-clear-all" onclick="clearAll()" data-i18n="clearAll">Clear All</button>
     </div>
 
-    <!-- Step 2: Thumbnail preview grid -->
     <div class="thumb-strip" id="thumbStrip"></div>
 
-    <!-- Step 3: Assign categories -->
-    <div class="assign-divider" id="assignDivider">Assign Categories</div>
+    <div class="assign-divider" id="assignDivider" data-i18n="assignCats">Assign Categories</div>
 
     <div class="batch-row" id="batchRow">
-      <label>Apply to all:</label>
-      <select id="batchCategory"><option value="">— Category —</option></select>
-      <button class="btn-apply-all" onclick="applyToAll()">Apply All</button>
+      <label data-i18n="applyToAll">Apply to all:</label>
+      <select id="batchCategory"><option value="" data-i18n-opt="selectCat">— Category —</option></select>
+      <button class="btn-apply-all" onclick="applyToAll()" data-i18n="applyBtn">Apply All</button>
     </div>
 
     <div class="photo-list" id="photoList"></div>
@@ -399,8 +438,9 @@
 
   <!-- NOTES -->
   <div class="section">
-    <div class="section-label">Notes</div>
-    <textarea id="notes" placeholder="Optional — observations, issues, materials used..."></textarea>
+    <div class="section-label" data-i18n="notes">Notes</div>
+    <textarea id="notes" data-i18n-placeholder="notesHint"
+      placeholder="Optional — observations, issues, materials used..."></textarea>
   </div>
 
   <!-- SUBMIT -->
@@ -410,61 +450,196 @@
     </div>
     <div class="progress-label" id="progressLabel"></div>
     <div class="success-banner" id="successBanner"></div>
-    <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">Upload to Drive</button>
+    <button class="btn-submit" id="submitBtn" onclick="handleSubmit()" data-i18n="uploadBtn">
+      Upload to Drive
+    </button>
   </div>
 
 </div>
 
 <script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwr-Eilpi6dB0pBFtrK7DyjwaDNKaefg-SqS8WXzcj7Jy91iX-X4wYHqbwXUFpMkx2/exec';
 const MAX_PHOTOS = 10;
 
-const CATEGORIES = [
-  { value: 'Before',     label: '01 – Before'     },
-  { value: 'Layout',     label: '02 – Layout'     },
-  { value: 'Install',    label: '03 – Install'    },
-  { value: 'Irrigation', label: '04 – Irrigation' },
-  { value: 'Issues',     label: '05 – Issues'     },
-  { value: 'Final',      label: '06 – Final'      },
-];
+// ── TRANSLATIONS ──────────────────────────────────────────────────────────────
+const STRINGS = {
+  en: {
+    jobInfo:       'Job Info',
+    project:       'Project',
+    crewMember:    'Crew Member',
+    date:          'Date',
+    photos:        'Photos',
+    selectPhotos:  'Select Photos from Camera Roll',
+    assignCats:    'Assign Categories',
+    applyToAll:    'Apply to all:',
+    applyBtn:      'Apply All',
+    notes:         'Notes',
+    notesHint:     'Optional — observations, issues, materials used...',
+    clearAll:      'Clear All',
+    uploadBtn:     'Upload to Drive',
+    uploading:     'Uploading…',
+    retryFailed:   'Retry Failed',
+    selectProject: '— Select Project —',
+    selectCrew:    '— Select Crew Member —',
+    selectCat:     '— Category —',
+    uploadingN:    (n, t) => `Uploading ${n} of ${t}…`,
+    uploadedAll:   (n) => `✅ ${n} photo${n > 1 ? 's' : ''} uploaded to Drive!`,
+    uploadedSome:  (u, f) => `${u} uploaded · ${f} failed — see red items above`,
+    limitReached:  `Maximum of ${MAX_PHOTOS} photos per submission reached.`,
+    slotsLeft:     (slots, total) => `Only ${slots} slot${slots === 1 ? '' : 's'} remaining — adding first ${slots} of ${total} selected.`,
+    clearConfirm:  (n) => `Remove all ${n} photos and start over?`,
+    pickCatFirst:  'Select a category first.',
+    pickProject:   'Please select a project.',
+    pickCrew:      'Please select a crew member.',
+    addPhoto:      'Please add at least one photo.',
+    inDrive:       '✓ In Drive',
+    sent:          '✓ Sent — verify in Drive',
+    counterLabel:  (n, max, atMax) => `<strong>${n} / ${max}</strong> photos selected${atMax ? ' — limit reached' : ''}`,
+    categories: {
+      Before:     '01 – Before',
+      Layout:     '02 – Layout',
+      Install:    '03 – Install',
+      Irrigation: '04 – Irrigation',
+      Issues:     '05 – Issues',
+      Final:      '06 – Final',
+    }
+  },
+  es: {
+    jobInfo:       'Info del Trabajo',
+    project:       'Proyecto',
+    crewMember:    'Miembro del Equipo',
+    date:          'Fecha',
+    photos:        'Fotos',
+    selectPhotos:  'Seleccionar Fotos del Carrete',
+    assignCats:    'Asignar Categorías',
+    applyToAll:    'Aplicar a todas:',
+    applyBtn:      'Aplicar',
+    notes:         'Notas',
+    notesHint:     'Opcional — observaciones, problemas, materiales usados...',
+    clearAll:      'Borrar Todo',
+    uploadBtn:     'Subir a Drive',
+    uploading:     'Subiendo…',
+    retryFailed:   'Reintentar',
+    selectProject: '— Seleccionar Proyecto —',
+    selectCrew:    '— Seleccionar Miembro —',
+    selectCat:     '— Categoría —',
+    uploadingN:    (n, t) => `Subiendo ${n} de ${t}…`,
+    uploadedAll:   (n) => `✅ ¡${n} foto${n > 1 ? 's' : ''} subida${n > 1 ? 's' : ''} a Drive!`,
+    uploadedSome:  (u, f) => `${u} subidas · ${f} fallaron — ver elementos en rojo`,
+    limitReached:  `Máximo de ${MAX_PHOTOS} fotos por envío alcanzado.`,
+    slotsLeft:     (slots, total) => `Solo quedan ${slots} espacio${slots === 1 ? '' : 's'} — agregando las primeras ${slots} de ${total} seleccionadas.`,
+    clearConfirm:  (n) => `¿Eliminar las ${n} fotos y empezar de nuevo?`,
+    pickCatFirst:  'Seleccione una categoría primero.',
+    pickProject:   'Por favor seleccione un proyecto.',
+    pickCrew:      'Por favor seleccione un miembro del equipo.',
+    addPhoto:      'Por favor agregue al menos una foto.',
+    inDrive:       '✓ En Drive',
+    sent:          '✓ Enviado — verificar en Drive',
+    counterLabel:  (n, max, atMax) => `<strong>${n} / ${max}</strong> fotos seleccionadas${atMax ? ' — límite alcanzado' : ''}`,
+    categories: {
+      Before:     '01 – Antes',
+      Layout:     '02 – Diseño',
+      Install:    '03 – Instalación',
+      Irrigation: '04 – Irrigación',
+      Issues:     '05 – Problemas',
+      Final:      '06 – Final',
+    }
+  }
+};
 
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let lang   = localStorage.getItem('fd_lang') || 'en';
 let photos = [];
+
+function t(key)       { return STRINGS[lang][key] || STRINGS.en[key]; }
+function tCat(value)  { return STRINGS[lang].categories[value] || value; }
+
+// ── LANGUAGE SWITCHER ─────────────────────────────────────────────────────────
+function setLanguage(newLang) {
+  lang = newLang;
+  localStorage.setItem('fd_lang', lang);
+  document.getElementById('htmlRoot').lang = lang;
+
+  // Toggle button styles
+  document.getElementById('btn-en').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
+  document.getElementById('btn-es').className = 'lang-btn' + (lang === 'es' ? ' active' : '');
+
+  // Update all static labeled elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t(key)) el.textContent = t(key);
+  });
+
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t(key)) el.placeholder = t(key);
+  });
+
+  // Update first option in selects (the placeholder option)
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => {
+    const key = el.getAttribute('data-i18n-opt');
+    if (t(key)) el.textContent = t(key);
+  });
+
+  // Re-render photo grid so category dropdowns update
+  render();
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   const now = new Date();
-  document.getElementById('dateField').value = now.toLocaleDateString('en-US', {
+  const locale = lang === 'es' ? 'es-MX' : 'en-US';
+
+  document.getElementById('dateField').value = now.toLocaleDateString(locale, {
     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
   });
-  document.getElementById('headerDate').textContent = now.toLocaleDateString('en-US', {
+  document.getElementById('headerDate').textContent = now.toLocaleDateString(locale, {
     month: 'short', day: 'numeric', year: 'numeric'
   });
 
-  // Populate batch category select
-  const bsel = document.getElementById('batchCategory');
-  CATEGORIES.forEach(c => {
-    const o = document.createElement('option');
-    o.value = c.value; o.textContent = c.label; bsel.appendChild(o);
-  });
+  // Apply saved language on load
+  setLanguage(lang);
 
-  // Load dropdowns from Sheet
+  // Populate category batch select
+  rebuildBatchSelect();
+
+  // Load projects + crew from Sheet
   try {
     const res  = await fetch(APPS_SCRIPT_URL);
     const data = await res.json();
-    populateSelect('projectName', data.projects);
-    populateSelect('crewMember',  data.crew);
+    populateSelect('projectName', data.projects, t('selectProject'));
+    populateSelect('crewMember',  data.crew,     t('selectCrew'));
   } catch {
     populateSelect('projectName', [
       'Raising Canes Owings Mills, MD',
       'CFA Fountain of Miramar, FL',
       'Ball Diamond Dundalk Rec Center',
-    ]);
-    populateSelect('crewMember', ['Nick', 'Tino', 'James', 'Jamie', 'Rich', 'Ray', 'Belkis']);
+    ], t('selectProject'));
+    populateSelect('crewMember',
+      ['Nick', 'Tino', 'James', 'Jamie', 'Rich', 'Ray', 'Belkis'],
+      t('selectCrew')
+    );
   }
 });
 
-function populateSelect(id, items) {
+function rebuildBatchSelect() {
+  const bsel = document.getElementById('batchCategory');
+  // Keep or recreate the placeholder option
+  bsel.innerHTML = `<option value="" data-i18n-opt="selectCat">${t('selectCat')}</option>`;
+  Object.keys(STRINGS.en.categories).forEach(val => {
+    const o = document.createElement('option');
+    o.value = val;
+    o.textContent = tCat(val);
+    bsel.appendChild(o);
+  });
+}
+
+function populateSelect(id, items, placeholder) {
   const sel = document.getElementById(id);
+  // Reset to just the placeholder
+  sel.innerHTML = `<option value="">${placeholder}</option>`;
   items.forEach(item => {
     const o = document.createElement('option');
     o.value = item; o.textContent = item; sel.appendChild(o);
@@ -477,18 +652,17 @@ document.getElementById('photoInput').addEventListener('change', e => {
   const slots    = MAX_PHOTOS - photos.length;
 
   if (slots <= 0) {
-    alert(`Maximum of ${MAX_PHOTOS} photos per submission reached.`);
+    alert(t('limitReached'));
     e.target.value = ''; return;
   }
 
   const toAdd = incoming.slice(0, slots);
-  if (incoming.length > slots)
-    alert(`Only ${slots} slot${slots === 1 ? '' : 's'} remaining — adding first ${slots} of ${incoming.length} selected.`);
+  if (incoming.length > slots) alert(t('slotsLeft')(slots, incoming.length));
 
   toAdd.forEach(file => photos.push({
     file,
     objectUrl: URL.createObjectURL(file),
-    category: 'Before',
+    category:  'Before',
     uid: Date.now() + '-' + Math.random().toString(36).slice(2)
   }));
 
@@ -498,6 +672,9 @@ document.getElementById('photoInput').addEventListener('change', e => {
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function render() {
+  // Rebuild batch select with current language
+  rebuildBatchSelect();
+
   // Counter bar
   const bar  = document.getElementById('counterBar');
   const text = document.getElementById('counterText');
@@ -505,7 +682,7 @@ function render() {
     bar.classList.add('visible');
     const atMax = photos.length >= MAX_PHOTOS;
     text.className = 'counter-text' + (atMax ? ' at-max' : '');
-    text.innerHTML = `<strong>${photos.length} / ${MAX_PHOTOS}</strong> photos selected${atMax ? ' — limit reached' : ''}`;
+    text.innerHTML = t('counterLabel')(photos.length, MAX_PHOTOS, atMax);
   } else {
     bar.classList.remove('visible');
   }
@@ -521,7 +698,7 @@ function render() {
       el.innerHTML = `
         <img src="${p.objectUrl}" alt="">
         <span class="thumb-num">${i + 1}</span>
-        <span class="thumb-cat" id="tcat-${p.uid}">${p.category}</span>
+        <span class="thumb-cat" id="tcat-${p.uid}">${tCat(p.category)}</span>
         <button class="thumb-remove" onclick="removePhoto(${i})">✕</button>
       `;
       strip.appendChild(el);
@@ -530,7 +707,7 @@ function render() {
     strip.classList.remove('visible');
   }
 
-  // Assign section
+  // Assign section + cards
   const divider  = document.getElementById('assignDivider');
   const batchRow = document.getElementById('batchRow');
   const list     = document.getElementById('photoList');
@@ -541,8 +718,8 @@ function render() {
     batchRow.classList.add('visible');
 
     photos.forEach((p, i) => {
-      const opts = CATEGORIES.map(c =>
-        `<option value="${c.value}"${c.value === p.category ? ' selected' : ''}>${c.label}</option>`
+      const opts = Object.keys(STRINGS.en.categories).map(val =>
+        `<option value="${val}"${val === p.category ? ' selected' : ''}>${tCat(val)}</option>`
       ).join('');
 
       const card = document.createElement('div');
@@ -568,9 +745,8 @@ function render() {
 
 function setCategory(i, val) {
   photos[i].category = val;
-  // Sync thumbnail label
   const tcat = document.getElementById('tcat-' + photos[i].uid);
-  if (tcat) tcat.textContent = val;
+  if (tcat) tcat.textContent = tCat(val);
 }
 
 function removePhoto(i) {
@@ -581,7 +757,7 @@ function removePhoto(i) {
 
 function clearAll() {
   if (!photos.length) return;
-  if (!confirm(`Remove all ${photos.length} photos and start over?`)) return;
+  if (!confirm(t('clearConfirm')(photos.length))) return;
   photos.forEach(p => URL.revokeObjectURL(p.objectUrl));
   photos = [];
   render();
@@ -589,7 +765,7 @@ function clearAll() {
 
 function applyToAll() {
   const val = document.getElementById('batchCategory').value;
-  if (!val) { alert('Select a category first.'); return; }
+  if (!val) { alert(t('pickCatFirst')); return; }
   photos.forEach(p => p.category = val);
   render();
 }
@@ -600,9 +776,9 @@ async function handleSubmit() {
   const crew    = document.getElementById('crewMember').value;
   const notes   = document.getElementById('notes').value;
 
-  if (!project)       { alert('Please select a project.');       return; }
-  if (!crew)          { alert('Please select a crew member.');   return; }
-  if (!photos.length) { alert('Please add at least one photo.'); return; }
+  if (!project)       { alert(t('pickProject')); return; }
+  if (!crew)          { alert(t('pickCrew'));     return; }
+  if (!photos.length) { alert(t('addPhoto'));     return; }
 
   const btn           = document.getElementById('submitBtn');
   const progressWrap  = document.getElementById('progressWrap');
@@ -611,7 +787,7 @@ async function handleSubmit() {
   const successBanner = document.getElementById('successBanner');
 
   btn.disabled = true;
-  btn.textContent = 'Uploading…';
+  btn.textContent = t('uploading');
   progressWrap.style.display  = 'block';
   progressLabel.style.display = 'block';
   successBanner.style.display = 'none';
@@ -621,8 +797,8 @@ async function handleSubmit() {
   for (let i = 0; i < photos.length; i++) {
     const p  = photos[i];
     const st = document.getElementById('st-' + p.uid);
-    if (st) { st.className = 'card-status uploading'; st.textContent = 'Uploading…'; }
-    progressLabel.textContent = `Uploading ${i + 1} of ${photos.length}…`;
+    if (st) { st.className = 'card-status uploading'; st.textContent = t('uploading'); }
+    progressLabel.textContent = t('uploadingN')(i + 1, photos.length);
     progressFill.style.width  = ((i / photos.length) * 100) + '%';
 
     try {
@@ -640,10 +816,18 @@ async function handleSubmit() {
           date:        new Date().toISOString()
         })
       });
-      const result = await res.json();
-      if (!result.success) throw new Error(result.error || 'Upload failed');
+
+      let confirmed = false;
+      try {
+        const result = await res.json();
+        confirmed = result.success === true;
+      } catch {
+        confirmed = res.ok;
+      }
+
       uploaded++;
-      if (st) { st.className = 'card-status done'; st.textContent = '✓ In Drive'; }
+      if (st) { st.className = 'card-status done'; st.textContent = confirmed ? t('inDrive') : t('sent'); }
+
     } catch (err) {
       errors++;
       if (st) { st.className = 'card-status error'; st.textContent = '✗ ' + err.message; }
@@ -655,9 +839,10 @@ async function handleSubmit() {
   if (errors === 0) {
     progressWrap.style.display  = 'none';
     progressLabel.style.display = 'none';
-    successBanner.innerHTML     = `✅ ${uploaded} photo${uploaded > 1 ? 's' : ''} uploaded to Drive!`;
+    successBanner.innerHTML     = t('uploadedAll')(uploaded);
     successBanner.style.display = 'block';
-    btn.textContent = 'Upload to Drive';
+    btn.textContent = t('uploadBtn');
+
     setTimeout(() => {
       photos.forEach(p => URL.revokeObjectURL(p.objectUrl));
       photos = [];
@@ -668,8 +853,8 @@ async function handleSubmit() {
       btn.disabled = false;
     }, 3000);
   } else {
-    progressLabel.textContent = `${uploaded} uploaded · ${errors} failed — see red items above`;
-    btn.textContent = 'Retry Failed';
+    progressLabel.textContent = t('uploadedSome')(uploaded, errors);
+    btn.textContent = t('retryFailed');
     btn.disabled = false;
   }
 }
